@@ -28,6 +28,7 @@ module Simpler
 
     def call(env)
       route = @router.route_for(env)
+      return dafault_response unless route
       controller = route.controller.new(env)
       action = route.action
 
@@ -52,6 +53,14 @@ module Simpler
 
     def make_response(controller, action)
       controller.make_response(action)
+    end
+
+    def dafault_response
+      [
+        404,
+        { 'Content-Type' => 'text/html' },
+        ["<h1>404 Page Not Found</h1>"]
+      ]
     end
 
   end
