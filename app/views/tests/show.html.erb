@@ -7,9 +7,8 @@
   <body>
     <h1>Simpler framework at work!</h1>
 
-    <% test = Test.where(params).all[0] %>
-    <% if test %>
-      <p><%= test.title %> (<%= test.level %>)</p>
+    <% if @test %>
+      <p><%= @test.title %> (<%= @test.level %>)</p>
     <% else %>
       <p> Not found </p>
     <% end %>
