@@ -9,10 +9,11 @@ module Simpler
       @env = env
     end
 
-    def render(binding)
+    def render(bind)
+      plain = check_plain_template
+      return plain unless plain.nil?
       template = File.read(template_path)
-
-      ERB.new(template).result(binding)
+      ERB.new(template).result(bind)
     end
 
     private
@@ -29,10 +30,17 @@ module Simpler
       @env['simpler.template']
     end
 
-    def template_path
-      path = template || [controller.name, action].join('/')
+    def check_plain_template
+      @template = template
+      if @template.class == Hash
+        @template[:plain] + "\n" if @template[:plain]
+      end
+    end
 
-      Simpler.root.join(VIEW_BASE_PATH, "#{path}.html.erb")
+    def template_path
+      path =  @template || [controller.name, action].join('/')
+      @env['simpler.template_path'] = "#{path}.html.erb"
+      template_path = Simpler.root.join(VIEW_BASE_PATH, "#{path}.html.erb")
     end
 
   end

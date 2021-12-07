@@ -26,11 +26,14 @@ module Simpler
       @router.instance_eval(&block)
     end
 
-    def call(env)
+    def call(env, logger)
+      @logger = logger
       route = @router.route_for(env)
-      controller = route.controller.new(env)
+      return dafault_response unless route
+      controller = route.controller.new(env, @logger)
       action = route.action
 
+      @logger.info("Handler: " + controller.class.to_s + "#" + action.to_s)
       make_response(controller, action)
     end
 
@@ -52,6 +55,14 @@ module Simpler
 
     def make_response(controller, action)
       controller.make_response(action)
+    end
+
+    def dafault_response
+      [
+        404,
+        { 'Content-Type' => 'text/html' },
+        ["<h1>404 Page Not Found</h1>"]
+      ]
     end
 
   end
